@@ -2,16 +2,53 @@
 
 {% block content %}
 
-<h1 class="h1">{{ title }}</h1>
+<header>
+  <h2>Welcome to the Pokémon Memory Game!</h2>
+  <p>Pick a generation or a Pokémon to start playing.</p>
+  <p>Win badges and cards as you go. Gotta match 'em all!</p>
+</header>
 
-<ul class="grid">
-  {% for item in items %}
-    <li>
-      <a href="/plant/{{ item.id }}">
-        {% render 'server/components/card/card.liquid', item: item %}
-      </a>
-    </li>
-  {% endfor %}
-</ul>
+<section class="select">
+  
+  <section class="select-gen">
+        <ul>
+          {% for generation in generations %}
+            <li>
+              <a href="/generation/{{ generation.id }}">Generation {{ generation.id }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+  </section>
+
+  <!-- Search + Grid -->
+  <section class="select-poke">
+    
+    <!-- Search Form -->
+    <form method="get" action="/">
+      <input type="search" id="search" placeholder="Search Pokémon..." name="searchbar">
+      <button type="submit">Search</button>
+    </form>
+    
+    <!-- Pokémon Grid -->
+    <div class="pokemon-grid">
+      <ul id="pokemon-grid" class="list">
+        {% if pokemon.size > 0 %}
+          {% for pokemon in pokemon %}
+            <li class="list-item">
+              <a href="/pokemon/{{ pokemon.name }}">
+                <img src="{{ pokemon.sprite }}" alt="{{ pokemon.name }}">
+                <p class="name">{{ pokemon.name }}</p>
+              </a>
+            </li>
+          {% endfor %}
+        {% else %}
+          <p>No Pokémon found. Try another search!</p>
+        {% endif %}
+      </ul>
+    </div>
+          
+  </section>
+          
+</section>
 
 {% endblock %}

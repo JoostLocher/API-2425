@@ -1,6 +1,22 @@
 {% layout "server/layouts/base.liquid" %}
 
 {% block content %}
-<h1 class="h1">{{ item.name }}</h1>
-<img src="{{ item.image.src }}" alt="{{ item.image.alt }}" width="{{ item.image.width }}" height="{{ item.image.height }}" />
+  <h1 class="h1">{{ pokemon.name |  capitalize }}</h1>
+  <img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}" />
+
+  <h2>Types</h2>
+  <ul>
+    {% for type in types %}
+      <li>{{ type | upcase }}</li>
+    {% endfor %}
+  </ul>
+
+  <h2>Stats</h2>
+  <ul>
+    {% for stat in stats %}
+      <li>{{ stat.name }}: {{ stat.value }}</li>
+    {% endfor %}
+  </ul>
+
+  <a href="/">terug naar home</a>
 {% endblock %}

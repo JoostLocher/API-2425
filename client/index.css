@@ -5,16 +5,32 @@
 /*.layout and view styling */
 @import '../server/layouts/base.css';
 @import '../server/views/index.css';
+@import '../server/views/detail.css';
 
 /* component styling */
 @import '../server/components/card/card.css';
 
+:root {
+  --color-white: #fff;
+  --color-black: #1d1d1b;
+  --color-blue: #023da7;
+  --color-gray: #dadada;
+}
+
 body {
-  color: black;
+  color: var(--color-black);
+  background-color: var(--color-white);
   max-width: 1440px;
   margin: 0 auto;
+  min-height: 100dvh;
+  padding: 0 1rem;
+  /* overflow: hidden; */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
 }
 
 main {
   padding: 1rem;
+  overflow: auto;
 }

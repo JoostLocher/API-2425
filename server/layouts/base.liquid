@@ -18,7 +18,16 @@
 
 <body>
   <header>
-    Deze header staat op elke pagina
+    <nav>
+      <div class="title">
+        <a href="/">
+          <h1>MEM404</h1>
+          <p>Gotta Match 'Em All</p>
+        </a>
+      </div>
+
+      <div class="nav-menu"><a href="#">Binder</a></div>
+    </nav>
   </header>
   <main>
     {% block content %}{% endblock %}
@@ -26,5 +35,7 @@
   <footer>
     Deze footer staat op elke pagina
   </footer>
+
+  {% comment %} <script src="https://cdn.jsdelivr.net/npm/list.js@2.3.1/dist/list.min.js"></script> {% endcomment %}
 </body>
 </html>
