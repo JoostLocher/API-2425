@@ -1,5 +1,5 @@
 /* Memory Game Styles */
-main {
+.memory-page {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,69 +8,68 @@ main {
 .memory-game {
     max-width: 600px;
     width: 80vw;
-    /* margin: 0 auto; */
     padding: 20px;
-  }
+}
   
-  /* Game header styling */
-  .game-header {
+/* Game header styling */
+.game-header {
     text-align: center;
     margin-bottom: 20px;
     color: var(--color-blue);
     font-size: var(--font-size-h5);
-  }
+}
   
-  /* Game info display (timer and moves counter) */
-  .game-info {
+/* Game info display (timer and moves counter) */
+.game-info {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
     font-size: 1.2rem;
     font-weight: bold;
-    color: var(--color-black); /* Using brand color for info text */
-  }
+    color: var(--color-black);
+}
   
-  /* Memory grid layout */
-  .memory-grid {
+/* Memory grid layout */
+.memory-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 10px;
-  }
+}
   
-  /* Responsive grid layout for smaller screens */
-  @media (max-width: 600px) {
+/* Responsive grid layout for smaller screens */
+@media (max-width: 600px) {
     .memory-grid {
-      grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
-  }
+}
   
-  /* Individual memory card styling */
-  .memory-card {
+/* Individual memory card styling */
+.memory-card {
     aspect-ratio: 1/1;
     border-radius: 8px;
-    background-color: var(--color-gray); /* Using brand color for card base */
+    background-color: var(--color-gray);
     cursor: pointer;
     transition: transform 0.3s;
     transform-style: preserve-3d;
     position: relative;
-  }
+}
   
-  .memory-card:hover {
+.memory-card:hover {
     transform: scale(1.05);
-  }
+}
   
-  .memory-card.flipped {
+.memory-card.flipped {
     transform: rotateY(180deg);
-  }
+}
   
-  .memory-card.matched {
+.memory-card.matched {
     transform: rotateY(180deg);
-    box-shadow: 0 0 10px var(--color-blue); /* Using brand color for matched pairs glow */
+    box-shadow: 0 0 10px var(--color-blue);
     cursor: default;
-  }
+}
   
-  /* Card front and back faces */
-  .card-front, .card-back {
+/* Card front and back faces */
+.card-front, .card-back {
     width: 100%;
     height: 100%;
     position: absolute;
@@ -79,116 +78,128 @@ main {
     justify-content: center;
     align-items: center;
     border-radius: 8px;
-  }
+}
   
-  .card-front {
-    background-color: var(--color-gray); /* Using brand color for card front */
+.card-front {
+    background-color: var(--color-gray);
     transform: rotateY(180deg);
-    border: 2px solid var(--color-blue); /* Using brand color for border */
-  }
+    border: 2px solid var(--color-blue);
+}
   
-  /* PokeBall style for card back */
-  .card-back {
-    background-color: var(--color-blue); /* Using brand color for card back */
-    border: 2px solid var(--color-blue); /* Using brand color for border */
+/* PokeBall style for card back */
+.card-back {
+    background-color: var(--color-blue);
+    border: 2px solid var(--color-blue);
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23fff' stroke='%23023da7' stroke-width='5'/%3E%3Cpath d='M5,50h90' stroke='%23023da7' stroke-width='5'/%3E%3Ccircle cx='50' cy='50' r='15' fill='%23fff' stroke='%23023da7' stroke-width='5'/%3E%3Ccircle cx='50' cy='50' r='5' fill='%23023da7'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: center;
     background-size: 70%;
-  }
+}
   
-  .card-front img {
+.card-front img {
     max-width: 90%;
     max-height: 90%;
-  }
+}
   
-  /* Win and lose message styling */
-  .win-message, .lose-message {
+/* Win and lose message styling */
+.win-message, .lose-message {
     display: none;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: var(--color-white); /* Using brand color for message background */
+    background-color: var(--color-white);
     padding: 30px;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     z-index: 100;
     min-width: 300px;
-    color: var(--color-black); /* Using brand color for message text */
-  }
+    color: var(--color-black);
+}
   
-  .win-message {
-    border: 3px solid var(--color-blue); /* Using brand color for border */
-  }
+.win-message {
+    border: 3px solid var(--color-blue);
+}
   
-  .lose-message {
-    border: 3px solid var(--color-blue); /* Using brand color for border */
-  }
+.lose-message {
+    border: 3px solid var(--color-blue);
+}
   
-  .win-message.active, .lose-message.active {
+.win-message.active, .lose-message.active {
     display: block;
     animation: fadeIn 0.5s;
-  }
+}
   
-  @keyframes fadeIn {
+@keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
-  }
+}
   
-  .win-message h3 {
-    color: var(--color-blue); /* Using brand color for header */
+.win-message h3 {
+    color: var(--color-blue);
     font-size: 1.8rem;
     margin-bottom: 15px;
-  }
+}
   
-  .lose-message h3 {
-    color: var(--color-blue); /* Using brand color for header */
+.lose-message h3 {
+    color: var(--color-blue);
     font-size: 1.8rem;
     margin-bottom: 15px;
-  }
+}
   
-  .win-message p, .lose-message p {
+.win-message p, .lose-message p {
     margin-bottom: 15px;
     font-size: 1.2rem;
-  }
+}
+
+/* Collected Pokemon display */
+.collected-pokemon-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border-radius: 8px;
+}
+
+.collected-pokemon-sprite {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+}
   
-  .card-collected {
-    font-weight: bold;
-    color: var(--color-blue); /* Using brand color for text */
-  }
-  
-  /* Button styling */
-  .message-buttons {
+/* Button styling */
+.message-buttons {
     display: flex;
     justify-content: center;
     gap: 15px;
     margin-top: 20px;
-  }
+}
   
-  .game-button {
+.game-button {
     display: inline-block;
     padding: 10px 20px;
-    color: var(--color-white); /* Using brand color for text */
-    background-color: var(--color-blue); /* Using brand color for buttons */
+    color: var(--color-white);
+    background-color: var(--color-blue);
     text-decoration: none;
     border-radius: 4px;
     font-weight: bold;
     transition: background-color 0.3s, transform 0.2s;
-  }
+}
   
-  .game-button:hover {
+.game-button:hover {
     transform: translateY(-2px);
-    background-color: var(--color-black); /* Using brand color for hover state */
-  }
+    background-color: var(--color-black);
+}
   
-  /* Confetti animation for win celebration */
-  .confetti {
+/* Confetti animation for win celebration */
+.confetti {
     position: fixed;
     width: 10px;
     height: 10px;
-    background-color: var(--color-blue); /* Using brand color for confetti */
+    background-color: var(--color-blue);
     top: -10px;
     z-index: 90;
-  }
+}

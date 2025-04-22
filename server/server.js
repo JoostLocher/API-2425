@@ -26,7 +26,8 @@ app
 // ==========================================
 const baseURL = "https://pokeapi.co/api/v2/";
 
-const limit = 1025;
+// 1025
+const limit = 105;
 const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
 // ==========================================
@@ -95,112 +96,60 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
   const name = req.params.name;
   const response = await fetch(`${baseURL}pokemon/${name}`);
   const data = await response.json();
-  
-  // Get the available sprites for this Pokémon
-  const sprites = data.sprites;
-  
-  // Create array of sprites to use for the memory game
-  // We'll use regular and shiny versions of front/back sprites
-  const availableSprites = [
-    { id: 'front_default', sprite: sprites.front_default },
-    { id: 'front_shiny', sprite: sprites.front_shiny },
-    { id: 'back_default', sprite: sprites.back_default },
-    { id: 'back_shiny', sprite: sprites.back_shiny },
-    { id: 'front_female', sprite: sprites.front_female },
-    { id: 'front_shiny_female', sprite: sprites.front_shiny_female }
-  ].filter(sprite => sprite.sprite !== null); // Filter out null sprites
-  
-  // If we don't have enough sprites, use other versions or generations
-  if (availableSprites.length < 6) {
-    // Add other sprites if available
-    const otherSprites = [];
-    
-    // Check for other versions like dream_world, official-artwork, etc.
-    if (sprites.other) {
-      if (sprites.other['official-artwork']?.front_default) {
-        otherSprites.push({
-          id: 'official_artwork',
-          sprite: sprites.other['official-artwork'].front_default
-        });
-      }
-      
-      if (sprites.other.dream_world?.front_default) {
-        otherSprites.push({
-          id: 'dream_world',
-          sprite: sprites.other.dream_world.front_default
-        });
-      }
-      
-      if (sprites.other.home?.front_default) {
-        otherSprites.push({
-          id: 'home_default',
-          sprite: sprites.other.home.front_default
-        });
-      }
-      
-      if (sprites.other.home?.front_shiny) {
-        otherSprites.push({
-          id: 'home_shiny',
-          sprite: sprites.other.home.front_shiny
-        });
-      }
-    }
-    
-    // Add game version sprites if needed
-    if (availableSprites.length + otherSprites.length < 6) {
-      const versionSprites = [];
-      for (const version in sprites.versions) {
-        for (const generation in sprites.versions[version]) {
-          if (sprites.versions[version][generation].front_default) {
-            versionSprites.push({
-              id: `${version}_${generation}`,
-              sprite: sprites.versions[version][generation].front_default
-            });
-          }
-          
-          if (sprites.versions[version][generation].front_shiny) {
-            versionSprites.push({
-              id: `${version}_${generation}_shiny`,
-              sprite: sprites.versions[version][generation].front_shiny
-            });
-          }
+
+  const get = (obj, path) =>
+    path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
+
+  // Define primary sprite sources
+  const spriteSources = [
+    { id: 'front_default', path: ['sprites', 'front_default'] },
+    { id: 'front_shiny', path: ['sprites', 'front_shiny'] },
+    { id: 'back_default', path: ['sprites', 'back_default'] },
+    { id: 'back_shiny', path: ['sprites', 'back_shiny'] },
+    { id: 'official_artwork', path: ['sprites', 'other', 'official-artwork', 'front_default'] },
+    { id: 'home_default', path: ['sprites', 'other', 'home', 'front_default'] },
+    { id: 'home_shiny', path: ['sprites', 'other', 'home', 'front_shiny'] },
+    { id: 'dream_world', path: ['sprites', 'other', 'dream_world', 'front_default'] }
+  ];
+
+  const availableSprites = spriteSources
+    .map(source => ({ id: source.id, sprite: get(data, source.path) }))
+    .filter(entry => !!entry.sprite);
+
+  // If fewer than 3 unique sprite sources, try to find more in game versions
+  if (availableSprites.length < 3) {
+    const versions = data.sprites.versions;
+    for (const group in versions) {
+      for (const version in versions[group]) {
+        const spriteUrl = versions[group][version]?.front_default;
+        if (spriteUrl && !availableSprites.find(e => e.sprite === spriteUrl)) {
+          availableSprites.push({
+            id: `${group}_${version}`,
+            sprite: spriteUrl
+          });
         }
+        if (availableSprites.length >= 6) break;
       }
-      
-      // Add version sprites until we have enough
-      for (let i = 0; i < versionSprites.length && availableSprites.length + otherSprites.length < 6; i++) {
-        otherSprites.push(versionSprites[i]);
-      }
+      if (availableSprites.length >= 6) break;
     }
-    
-    // Add the other sprites to our available sprites
-    availableSprites.push(...otherSprites);
   }
-  
-  // Take the first 6 unique sprites or whatever is available
-  const uniqueSprites = availableSprites.slice(0, 6);
-  
-  // Create pairs for each sprite (duplicate each sprite)
-  const cardPairs = [];
-  uniqueSprites.forEach((spriteObj, index) => {
-    // Add two of each sprite for matching
-    cardPairs.push({
-      id: `${spriteObj.id}-1`,
-      sprite: spriteObj.sprite
-    });
-    
-    cardPairs.push({
-      id: `${spriteObj.id}-2`,
-      sprite: spriteObj.sprite
-    });
-  });
-  
+
+  // Take first 3–6 unique sprites
+  const selected = availableSprites.slice(0, 6);
+
+  // Duplicate each for matching pairs
+  const cardPairs = selected.flatMap(sprite => ([
+    { id: `${sprite.id}-1`, sprite: sprite.sprite },
+    { id: `${sprite.id}-2`, sprite: sprite.sprite }
+  ]));
+
   return res.send(await renderTemplate('server/views/memory-game.liquid', {
     title: `${name} Memory Game`,
     pokemon: data,
     cards: cardPairs
   }));
 });
+
 
 
 // ==========================================

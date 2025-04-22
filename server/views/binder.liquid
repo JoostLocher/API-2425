@@ -1,20 +1,24 @@
 {% layout "server/layouts/base.liquid" %}
 
 {% block content %}
-<div class="binder-container" id="binder-container">
-  <div class="binder-header">
-    <h2>Your Pokémon Card Collection</h2>
-    <p>Cards you've collected by winning memory games</p>
-    <a href="/" class="back-button">Back to Pokémon List</a>
-  </div>
-  
-  <div class="binder-grid" id="binder-grid">
-    <!-- Cards will be populated here via JavaScript -->
-  </div>
-  
-  <div class="empty-binder-message" id="empty-binder-message">
-    <p>Your binder is empty! Win memory games to collect Pokémon cards.</p>
-    <a href="/" class="action-button">Play Now</a>
-  </div>
+
+<div class="binder-page">
+    <div class="binder-container" id="binder-container">
+        <div class="binder-header">
+            <h2>Your Pokémon Card Collection</h2>
+            <p>Cards you've collected by winning memory games</p>
+            <a href="/" class="back-button">Back to Pokémon List</a>
+        </div>
+        
+        <div class="binder-grid" id="binder-grid">
+            <!-- Cards will be dynamically loaded here -->
+        </div>
+        
+        <div class="empty-binder-message" id="empty-binder-message">
+            <h3>Your binder is empty! Win memory games to collect Pokémon cards.</h3>
+            <a href="/" class="action-button">Play Now</a>
+        </div>
+    </div>
 </div>
+
 {% endblock %}

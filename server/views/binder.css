@@ -1,9 +1,15 @@
 /* Binder styles */
+
+.binder-page {
+    display: block;
+    padding: 2rem 1rem;
+  }
+
 .binder-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
-    width: 100%;
+    /* padding: 20px;
+    width: 100%; */
   }
   
   .binder-header {
