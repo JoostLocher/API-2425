@@ -9,6 +9,8 @@ main {
     background-color: var(--color-blue);
     color: var(--color-white);
     border-radius: 1rem;
+    justify-self: flex-start;
+    /* width: 100%; */
 
     h2 {
       font-weight: 600;
@@ -26,11 +28,12 @@ main {
   }
 
   .select {
-    display: grid;
+    /* display: grid;
     grid-template-columns: 1fr 5fr;
-    grid-template-rows: 1fr; 
+    grid-template-rows: 1fr;  */
     overflow: hidden;
-    gap: 2rem;
+    /* gap: 2rem; */
+    width: 100%;
     height: 100%;
 
 
@@ -80,15 +83,16 @@ main {
       form {
         display: flex;
         gap: 0.5rem;
-
-        input[type="text"] {
+        justify-content: center;
+        
+        input[type="search"] {
           flex: 1;
+          max-width: 500px;
           padding: 0.75rem;
           border-radius: 0.5rem;
           border: 2px solid var(--color-black);
           background-color: var(--color-white);
           color: var(--color-black);
-
         }
 
         button {

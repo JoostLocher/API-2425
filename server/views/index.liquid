@@ -4,21 +4,11 @@
 
 <header>
   <h2>Welcome to the Pokémon Memory Game!</h2>
-  <p>Pick a generation or a Pokémon to start playing.</p>
-  <p>Win badges and cards as you go. Gotta match 'em all!</p>
+  <p>Pick a Pokémon to start playing.</p>
+  <p>Win cards for pokémon as you go. Gotta match 'em all!</p>
 </header>
 
 <section class="select">
-  
-  <section class="select-gen">
-        <ul>
-          {% for generation in generations %}
-            <li>
-              <a href="/generation/{{ generation.id }}">Generation {{ generation.id }}</a>
-            </li>
-          {% endfor %}
-        </ul>
-  </section>
 
   <!-- Search + Grid -->
   <section class="select-poke">
@@ -35,7 +25,7 @@
         {% if pokemon.size > 0 %}
           {% for pokemon in pokemon %}
             <li class="list-item">
-              <a href="/pokemon/{{ pokemon.name }}">
+              <a href="/pokemon/{{ pokemon.name }}/memory-game">
                 <img src="{{ pokemon.sprite }}" alt="{{ pokemon.name }}">
                 <p class="name">{{ pokemon.name }}</p>
               </a>

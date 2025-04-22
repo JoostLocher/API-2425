@@ -6,6 +6,7 @@
 @import '../server/layouts/base.css';
 @import '../server/views/index.css';
 @import '../server/views/detail.css';
+@import '../server/views/memory-game.css';
 
 /* component styling */
 @import '../server/components/card/card.css';

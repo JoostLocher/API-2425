@@ -1,0 +1,51 @@
+{% layout "server/layouts/base.liquid" %}
+
+{% block content %}
+<div class="memory-game">
+  <div class="game-header">
+    <h2>{{ pokemon.name | capitalize }} Memory Game</h2>
+    <p>Match pairs of Pokémon sprites to win!</p>
+  </div>
+  
+  <div class="game-info">
+    <div class="moves">Moves remaining: <span id="moves-left">30</span></div>
+    <div class="timer">Time: <span id="timer">01:00</span></div>
+  </div>
+  
+  <div class="memory-grid" id="memory-grid" data-pokemon="{{ pokemon.name }}">
+    {% for card in cards %}
+      <div class="memory-card" data-sprite="{{ card.id }}">
+        <div class="card-front">
+          <img src="{{ card.sprite }}" alt="Pokémon sprite">
+        </div>
+        <div class="card-back">
+          <!-- PokeBall image will be added via CSS -->
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Win Message -->
+  <div class="win-message" id="win-message">
+    <h3>Congratulations!</h3>
+    <p>You matched all {{ cards.size | divided_by: 2 }} pairs!</p>
+    <p>Completed in <span id="final-moves">0</span> moves and <span id="final-time">00:00</span>!</p>
+    <p class="card-collected">You've collected a {{ pokemon.name | capitalize }} card for your binder!</p>
+    <div class="message-buttons">
+      <a href="/binder" class="game-button binder-button">View Binder</a>
+      <a href="/" class="game-button home-button">Back to Pokémon List</a>
+    </div>
+  </div>
+  
+  <!-- Lose Message -->
+  <div class="lose-message" id="lose-message">
+    <h3>Game Over</h3>
+    <p id="lose-reason">You ran out of moves!</p>
+    <p>Better luck next time!</p>
+    <div class="message-buttons">
+      <a href="/pokemon/{{ pokemon.name }}/memory-game" class="game-button retry-button">Try Again</a>
+      <a href="/" class="game-button home-button">Back to Pokémon List</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

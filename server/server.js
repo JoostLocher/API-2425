@@ -26,7 +26,7 @@ app
 // ==========================================
 const baseURL = "https://pokeapi.co/api/v2/";
 
-const limit = 100;
+const limit = 1025;
 const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
 // ==========================================
@@ -57,15 +57,15 @@ app.get('/', async (req, res) => {
   });
 
   // Fetch all generations data
-  const genResponse = await fetch(`${baseURL}generation`);
-  const genData = await genResponse.json();
+  // const genResponse = await fetch(`${baseURL}generation`);
+  // const genData = await genResponse.json();
 
 
   // Map the generation data to a more accessible format
-  const genList = genData.results.map((gen, index) => ({
-    id: index + 1,
-    name: gen.name
-  }));
+  // const genList = genData.results.map((gen, index) => ({
+  //   id: index + 1,
+  //   name: gen.name
+  // }));
 
   // Fetch sprite details for each filtered Pokémon
   const pokemonSprites = await Promise.all(
@@ -83,57 +83,149 @@ app.get('/', async (req, res) => {
     await renderTemplate('server/views/index.liquid', {
       title: 'Home',
       pokemon: pokemonSprites,
-      generations: genList
+      // generations: genList
     })
   );
 });
 
 // ==========================================
-// Pokemon detail pagina
+// Memory Game
 // ==========================================
-app.get('/pokemon/:name/', async (req, res) => {
-    const name = req.params.name;
-    const response = await fetch(`${baseURL}pokemon/${name}`);
-    const data = await response.json();
-
-    const types = data.types.map(typeObj => typeObj.type.name);
-
-    const stats = data.stats.map(stat => ({
-      name: stat.stat.name,
-      value: stat.base_stat
-    }));
+app.get('/pokemon/:name/memory-game', async (req, res) => {
+  const name = req.params.name;
+  const response = await fetch(`${baseURL}pokemon/${name}`);
+  const data = await response.json();
+  
+  // Get the available sprites for this Pokémon
+  const sprites = data.sprites;
+  
+  // Create array of sprites to use for the memory game
+  // We'll use regular and shiny versions of front/back sprites
+  const availableSprites = [
+    { id: 'front_default', sprite: sprites.front_default },
+    { id: 'front_shiny', sprite: sprites.front_shiny },
+    { id: 'back_default', sprite: sprites.back_default },
+    { id: 'back_shiny', sprite: sprites.back_shiny },
+    { id: 'front_female', sprite: sprites.front_female },
+    { id: 'front_shiny_female', sprite: sprites.front_shiny_female }
+  ].filter(sprite => sprite.sprite !== null); // Filter out null sprites
+  
+  // If we don't have enough sprites, use other versions or generations
+  if (availableSprites.length < 6) {
+    // Add other sprites if available
+    const otherSprites = [];
     
-
-    return res.send(await renderTemplate('server/views/detail.liquid', {
-      title: `${name}`,
-      pokemon: data,
-      stats,
-      types
-    })); 
+    // Check for other versions like dream_world, official-artwork, etc.
+    if (sprites.other) {
+      if (sprites.other['official-artwork']?.front_default) {
+        otherSprites.push({
+          id: 'official_artwork',
+          sprite: sprites.other['official-artwork'].front_default
+        });
+      }
+      
+      if (sprites.other.dream_world?.front_default) {
+        otherSprites.push({
+          id: 'dream_world',
+          sprite: sprites.other.dream_world.front_default
+        });
+      }
+      
+      if (sprites.other.home?.front_default) {
+        otherSprites.push({
+          id: 'home_default',
+          sprite: sprites.other.home.front_default
+        });
+      }
+      
+      if (sprites.other.home?.front_shiny) {
+        otherSprites.push({
+          id: 'home_shiny',
+          sprite: sprites.other.home.front_shiny
+        });
+      }
+    }
+    
+    // Add game version sprites if needed
+    if (availableSprites.length + otherSprites.length < 6) {
+      const versionSprites = [];
+      for (const version in sprites.versions) {
+        for (const generation in sprites.versions[version]) {
+          if (sprites.versions[version][generation].front_default) {
+            versionSprites.push({
+              id: `${version}_${generation}`,
+              sprite: sprites.versions[version][generation].front_default
+            });
+          }
+          
+          if (sprites.versions[version][generation].front_shiny) {
+            versionSprites.push({
+              id: `${version}_${generation}_shiny`,
+              sprite: sprites.versions[version][generation].front_shiny
+            });
+          }
+        }
+      }
+      
+      // Add version sprites until we have enough
+      for (let i = 0; i < versionSprites.length && availableSprites.length + otherSprites.length < 6; i++) {
+        otherSprites.push(versionSprites[i]);
+      }
+    }
+    
+    // Add the other sprites to our available sprites
+    availableSprites.push(...otherSprites);
+  }
+  
+  // Take the first 6 unique sprites or whatever is available
+  const uniqueSprites = availableSprites.slice(0, 6);
+  
+  // Create pairs for each sprite (duplicate each sprite)
+  const cardPairs = [];
+  uniqueSprites.forEach((spriteObj, index) => {
+    // Add two of each sprite for matching
+    cardPairs.push({
+      id: `${spriteObj.id}-1`,
+      sprite: spriteObj.sprite
+    });
+    
+    cardPairs.push({
+      id: `${spriteObj.id}-2`,
+      sprite: spriteObj.sprite
+    });
+  });
+  
+  return res.send(await renderTemplate('server/views/memory-game.liquid', {
+    title: `${name} Memory Game`,
+    pokemon: data,
+    cards: cardPairs
+  }));
 });
 
-// // Pokémon detail page route
-// app.get('/pokemon/:pokemonName', async (req, res) => {
-//   try {
-//     const pokemonName = req.params.pokemonName;
-//     const pokemonDetailResponse = await fetch(`${apiBaseURL}pokemon/${pokemonName}`);
-//     const pokemonDetailData = await pokemonDetailResponse.json();
 
-//     // Get Pokémon types
-//     const pokemonTypes = pokemonDetailData.types.map(typeObj => typeObj.type.name);
+// ==========================================
+// Binder Route
+// ==========================================
+app.get('/binder', async (req, res) => {
+  return res.send(
+    await renderTemplate('server/views/binder.liquid', {
+      title: 'Pokémon Card Collection'
+    })
+  );
+});
 
-//     // Get Pokémon stats
-//     const pokemonStats = pokemonDetailData.stats.map(stat => ({
-//       name: stat.stat.name,
-//       value: stat.base_stat
-//     }));
 
-//     // Render the Pokémon detail page with the fetched data
-//     return res.send(await renderPage('server/views/detail.liquid', {
-//       title: pokemonName,
-//       pokemon: pokemonDetailData,
-//       stats: pokemonStats,
-//       types: pokemonTypes
-//     }));
-//   }
-// });
+// ==========================================
+// Pokemon detail pagina
+// ==========================================
+// app.get('/pokemon/:name/', async (req, res) => {
+//   const name = req.params.name;
+//   const response = await fetch(`${baseURL}pokemon/${name}`);
+//   const data = await response.json();
+
+//   const types = data.types.map(typeObj => typeObj.type.name);
+
+//   const stats = data.stats.map(stat => ({
+//     name: stat.stat.name,
+//     value: stat.base_stat
+//   }));
