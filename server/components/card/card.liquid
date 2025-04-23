@@ -1,22 +1,22 @@
-<div class="pokemon-card {% for type in pokemon.types %}type-{{ type.type.name }}{% if forloop.first %} main-type-{{ type.type.name }}{% endif %}{% endfor %}">
+<div class="pokemon-card main-type-{{ pokemon.types[0] }}">
+  <div class="pokemon-id">#{{ pokemon.id }}</div>
+
   <div class="card-image">
-    <img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}" />
+    <img src="{{ pokemon.image }}" alt="{{ pokemon.name }}">
   </div>
+
   <div class="card-info">
-    <div class="card-header">
-      <span class="pokemon-id">#{{ pokemon.id }}</span>
-      <h3 class="pokemon-name">{{ pokemon.name | capitalize }}</h3>
-    </div>
+    <h3 class="pokemon-name">{{ pokemon.name | capitalize }}</h3>
     <div class="pokemon-types">
       {% for type in pokemon.types %}
-        <span class="type-badge type-{{ type.type.name }}">{{ type.type.name | capitalize }}</span>
+        <span class="type-badge type-{{ type }}">{{ type | capitalize }}</span>
       {% endfor %}
     </div>
     <div class="pokemon-stats">
       {% for stat in pokemon.stats %}
         <div class="stat-item">
-          <span class="stat-name">{{ stat.stat.name | capitalize }}</span>
-          <span class="stat-value">{{ stat.base_stat }}</span>
+          <span class="stat-name">{{ stat.name | upcase }}</span>
+          <span class="stat-value">{{ stat.value }}</span>
         </div>
       {% endfor %}
     </div>

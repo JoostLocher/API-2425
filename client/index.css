@@ -1,21 +1,40 @@
 /* global styles */
 @import 'reset.css';
 @import "typography.css";
+@import 'card.css';
 
 /*.layout and view styling */
 @import '../server/layouts/base.css';
 @import '../server/views/index.css';
 @import '../server/views/detail.css';
 @import '../server/views/memory-game.css';
+@import '../server/views/binder.css';
 
-/* component styling */
-@import '../server/components/card/card.css';
 
 :root {
   --color-white: #fff;
   --color-black: #1d1d1b;
   --color-blue: #023da7;
   --color-gray: #dadada;
+
+  --type-normal: #A8A77A;
+  --type-fire: #EE8130;
+  --type-water: #6390F0;
+  --type-electric: #F7D02C;
+  --type-grass: #7AC74C;
+  --type-ice: #96D9D6;
+  --type-fighting: #C22E28;
+  --type-poison: #A33EA1;
+  --type-ground: #E2BF65;
+  --type-flying: #A98FF3;
+  --type-psychic: #F95587;
+  --type-bug: #A6B91A;
+  --type-rock: #B6A136;
+  --type-ghost: #735797;
+  --type-dragon: #6F35FC;
+  --type-dark: #705746;
+  --type-steel: #B7B7CE;
+  --type-fairy: #D685AD;
 }
 
 body {

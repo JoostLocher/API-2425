@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const loseMessage = document.getElementById('lose-message');
   
     const GAME_CONFIG = {
-      MAX_MOVES: 30,
-      TIME_LIMIT: 60,
+      MAX_MOVES: 15,
+      TIME_LIMIT: 30,
       CONFETTI_COUNT: 100
     };
   

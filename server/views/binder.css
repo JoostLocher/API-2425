@@ -3,14 +3,13 @@
 .binder-page {
     display: block;
     padding: 2rem 1rem;
+    background-color: var(--color-white);
   }
-
-.binder-container {
-    max-width: 1200px;
+  
+  .binder-container {
+    max-width: 1000px;
     margin: 0 auto;
-    /* padding: 20px;
-    width: 100%; */
-  }
+  }  
   
   .binder-header {
     text-align: center;
@@ -18,31 +17,33 @@
   }
   
   .binder-header h2 {
-    color: #30a7d7;
+    color: var(--color-blue);
     font-size: 2rem;
     margin-bottom: 10px;
   }
   
   .back-button {
     display: inline-block;
-    padding: 8px 15px;
-    background-color: #ee6b2f;
-    color: white;
-    border-radius: 4px;
+    padding: 10px 20px;
+    color: var(--color-white);
+    background-color: var(--color-blue);
     text-decoration: none;
-    margin-top: 15px;
+    border-radius: 4px;
     font-weight: bold;
-    transition: background-color 0.3s;
+    margin-top: 15px;
+    transition: background-color 0.3s, transform 0.2s;
   }
   
   .back-button:hover {
-    background-color: #d85b20;
+    transform: translateY(-2px);
+    background-color: var(--color-black);
   }
   
   .binder-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
+    gap: 24px;
+    padding: 1rem 0;
   }
   
   .binder-card {
