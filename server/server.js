@@ -5,7 +5,6 @@ import { Liquid } from 'liquidjs';
 import sirv from 'sirv';
 
 const app = new App();
-
 const engine = new Liquid({ extname: '.liquid' });
 
 const renderTemplate = async (template, data) => {
@@ -16,56 +15,63 @@ const renderTemplate = async (template, data) => {
   return await engine.renderFile(template, templateData);
 };
 
+// Serve static assets
 app
-.use(logger())
-.use('/', sirv(process.env.NODE_ENV === 'development' ? 'client' : 'dist'))
-.listen(3000, () => console.log('Server available on http://localhost:3000'));
+  .use(logger())
+  .use('/', sirv(process.env.NODE_ENV === 'development' ? 'client' : 'dist'))
+  .listen(3000, () => console.log('Server available on http://localhost:3000'));
 
-// ==========================================
-// pokemon API ophalen
-// ==========================================
+// ----------------------------------------------
+// Constants
+// ----------------------------------------------
 const baseURL = "https://pokeapi.co/api/v2/";
-
-// gen 1 : 151
-// all basics : 1025
 const limit = 151;
 const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
-// ==========================================
-// home pagina
-// ==========================================
+// ----------------------------------------------
+// Home Route
+// ----------------------------------------------
 app.get('/', async (req, res) => {
-  const searchQuery = req.query.searchbar || ''
-  console.log(searchQuery)
+  const searchQuery = req.query.searchbar || '';
+  let filteredPokemon = [];
 
-  // Fetch search results based on the user's query
-  const searchResponse = await fetch('https://pokemon-service-ucql.onrender.com/api/v1/pokemon/search?name=' + searchQuery);
-  const searchResults = await searchResponse.json();
+  try {
+    // Try to get filtered names from your external service
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout
 
-  // Extract the names of Pokémon found in the search results
-  const filterNames = searchResults.map((result) => {
-    return result.name
-  });
+    const searchResponse = await fetch(`https://pokemon-service-ucql.onrender.com/api/v1/pokemon/search?name=${searchQuery}`, {
+      signal: controller.signal
+    });
 
-  // Fetch all Pokémon data (names and URLs)
-  const pokemonResponse = await fetch(allPokemon);
-  const pokemonData = await pokemonResponse.json();
+    const searchResults = await searchResponse.json();
+    clearTimeout(timeoutId);
 
-  // Filter Pokémon by the names found in the search
-  let filteredPokemon = pokemonData.results.filter((pokemon) => {
-    if (filterNames.includes(pokemon.name)) {
-      return pokemon
-    }
-  });
+    const filterNames = searchResults.map((result) => result.name);
 
-  // Fetch sprite details for each filtered Pokémon
+    const pokemonResponse = await fetch(allPokemon);
+    const pokemonData = await pokemonResponse.json();
+
+    filteredPokemon = pokemonData.results.filter(pokemon =>
+      filterNames.includes(pokemon.name)
+    );
+  } catch (err) {
+    console.error("🔥 External service failed or timed out:", err);
+
+    // Fallback: basic Pokémon fetch without filtering
+    const pokemonResponse = await fetch(allPokemon);
+    const pokemonData = await pokemonResponse.json();
+    filteredPokemon = pokemonData.results;
+  }
+
+  // Fetch sprite images
   const pokemonSprites = await Promise.all(
     filteredPokemon.map(async (pokemon) => {
       const detailResponse = await fetch(pokemon.url);
       const detailData = await detailResponse.json();
       return {
         name: pokemon.name,
-        sprite: detailData.sprites.front_default // Get the front sprite image
+        sprite: detailData.sprites.front_default
       };
     })
   );
@@ -73,15 +79,14 @@ app.get('/', async (req, res) => {
   return res.send(
     await renderTemplate('server/views/index.liquid', {
       title: 'Home',
-      pokemon: pokemonSprites,
-      // generations: genList
+      pokemon: pokemonSprites
     })
   );
 });
 
-// ==========================================
-// Memory Game
-// ==========================================
+// ----------------------------------------------
+// Memory Game Route
+// ----------------------------------------------
 app.get('/pokemon/:name/memory-game', async (req, res) => {
   const name = req.params.name;
   const response = await fetch(`${baseURL}pokemon/${name}`);
@@ -90,7 +95,6 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
   const get = (obj, path) =>
     path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
 
-  // Define primary sprite sources
   const spriteSources = [
     { id: 'front_default', path: ['sprites', 'front_default'] },
     { id: 'front_shiny', path: ['sprites', 'front_shiny'] },
@@ -106,17 +110,13 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
     .map(source => ({ id: source.id, sprite: get(data, source.path) }))
     .filter(entry => !!entry.sprite);
 
-  // If fewer than 3 unique sprite sources, try to find more in game versions
   if (availableSprites.length < 3) {
     const versions = data.sprites.versions;
     for (const group in versions) {
       for (const version in versions[group]) {
         const spriteUrl = versions[group][version]?.front_default;
         if (spriteUrl && !availableSprites.find(e => e.sprite === spriteUrl)) {
-          availableSprites.push({
-            id: `${group}_${version}`,
-            sprite: spriteUrl
-          });
+          availableSprites.push({ id: `${group}_${version}`, sprite: spriteUrl });
         }
         if (availableSprites.length >= 6) break;
       }
@@ -124,10 +124,8 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
     }
   }
 
-  // Take first 3–6 unique sprites
   const selected = availableSprites.slice(0, 6);
 
-  // Duplicate each for matching pairs
   const cardPairs = selected.flatMap(sprite => ([
     { id: `${sprite.id}-1`, sprite: sprite.sprite },
     { id: `${sprite.id}-2`, sprite: sprite.sprite }
@@ -140,11 +138,9 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
   }));
 });
 
-
-
-// ==========================================
+// ----------------------------------------------
 // Binder Route
-// ==========================================
+// ----------------------------------------------
 app.get('/binder', async (req, res) => {
   return res.send(
     await renderTemplate('server/views/binder.liquid', {
@@ -152,19 +148,3 @@ app.get('/binder', async (req, res) => {
     })
   );
 });
-
-
-// ==========================================
-// Pokemon detail pagina
-// ==========================================
-// app.get('/pokemon/:name/', async (req, res) => {
-//   const name = req.params.name;
-//   const response = await fetch(`${baseURL}pokemon/${name}`);
-//   const data = await response.json();
-
-//   const types = data.types.map(typeObj => typeObj.type.name);
-
-//   const stats = data.stats.map(stat => ({
-//     name: stat.stat.name,
-//     value: stat.base_stat
-//   }));
