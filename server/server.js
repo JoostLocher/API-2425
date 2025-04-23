@@ -26,8 +26,9 @@ app
 // ==========================================
 const baseURL = "https://pokeapi.co/api/v2/";
 
-// 1025
-const limit = 500;
+// gen 1 : 151
+// all basics : 1025
+const limit = 151;
 const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
 // ==========================================
