@@ -46,11 +46,12 @@ body {
   padding: 0 1rem;
   /* overflow: hidden; */
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr;
 
 }
 
 main {
   padding: 1rem;
+  margin-bottom: 1rem;
   overflow: auto;
 }
