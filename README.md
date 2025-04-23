@@ -132,7 +132,7 @@ Eerst probeerde ik dit te doen met list.js, wat ik al eerder had gebruikt bij he
 
 Deze week heb ik de memory game voor elkaar gekregen door verschillende sprites voor 1 pokemon op te halen en deze dubbele te maken en aan elkaar linken zodat als je 2 dezelfde hebt omgedraaid dan blijven die vast staan en als je alles goed hebt win je en win je ook een kaart voor die pokemon die in je binder komt te staan. Hiervoor heb ik wel wat hulp gekregen van Claude en heb er zelf wat aangepast. Zo heb ik ook een functie toegevoegd dat je binnen een bepaalde tijd of aantal moves moet winnen om het allemaal wat lastiger te maken. 
 
-![Memory game](image.png)
+![Memory game](image-1.png)
 
 **Local Storage**
 
@@ -172,7 +172,7 @@ Voor het opslaan van de cards in de binder heb ik localstorage gebruikt in de cl
 
 In de laatste week begon ik met het afmaken van de binderpagina door de kaarten te stijlen en in te laden met JavaScript. Daarnaast heb ik ook de laatste puntjes op de i gezet, zoals het weghalen van de footer en ervoor zorgen dat je de afbeeldingen niet kunt selecteren tijdens het spelen.
 
-![Binder pagina met cards](image-1.png)
+![Binder pagina met cards](image.png)
 
 Voor de tweede API kwam ik wat in tijdsnood en heb ik gekozen om de Vibration Web API te gebruiken. Deze is iets simpeler en ik heb hem geïmplementeerd in de memorygame bij bepaalde handelingen, zoals het omdraaien van een kaart of wanneer je game over bent.
 
