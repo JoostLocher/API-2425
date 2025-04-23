@@ -12,12 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const winMessage = document.getElementById('win-message');
     const loseMessage = document.getElementById('lose-message');
   
+    // Game configuration
     const GAME_CONFIG = {
       MAX_MOVES: 15,
       TIME_LIMIT: 30,
       CONFETTI_COUNT: 100
     };
   
+    // Game state
     const gameState = {
       hasFlippedCard: false,
       lockBoard: false,
@@ -33,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pokemonName: grid.dataset.pokemon
     };
   
+    // Start game timer
     function startTimer() {
       if (!gameState.timerStarted) {
         gameState.timerStarted = true;
@@ -47,12 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Format seconds to MM:SS
     function formatTime(totalSeconds) {
       const minutes = Math.floor(totalSeconds / 60).toString().padStart(2, '0');
       const secs = (totalSeconds % 60).toString().padStart(2, '0');
       return `${minutes}:${secs}`;
     }
   
+    // Create confetti animation for win
     function createConfetti() {
       const colors = ['var(--color-blue)', 'var(--color-gray)', 'var(--color-white)'];
       for (let i = 0; i < GAME_CONFIG.CONFETTI_COUNT; i++) {
@@ -75,10 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Check if all pairs have been matched
     function checkForWin() {
       if (gameState.matchedPairs === gameState.totalPairs) {
         clearInterval(gameState.timerInterval);
-        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); // win buzz
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
         setTimeout(() => {
           winMessage.classList.add('active');
           createConfetti();
@@ -87,10 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Handle game over conditions
     function gameOver(reason) {
       clearInterval(gameState.timerInterval);
       gameState.lockBoard = true;
-      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); // game over buzz
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]);
+      
       const loseReasonEl = document.getElementById('lose-reason');
       if (loseReasonEl) {
         loseReasonEl.textContent = reason === 'time' ? "Time's up!" : "You ran out of moves!";
@@ -98,15 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
       loseMessage.classList.add('active');
     }
   
+    // Save the Pokemon card to localStorage
     async function savePokemonCard() {
       try {
         const collectedCards = JSON.parse(localStorage.getItem('pokemonCards') || '[]');
         const alreadyCollected = collectedCards.some(card => card.name === gameState.pokemonName);
+        
         if (!alreadyCollected) {
           const firstCardFront = document.querySelector('.card-front img');
           const cardImage = firstCardFront ? firstCardFront.src : null;
+          
           const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${gameState.pokemonName}`);
           const data = await response.json();
+          
           const newCard = {
             id: data.id,
             name: data.name,
@@ -117,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
               value: s.base_stat
             }))
           };
+          
           collectedCards.push(newCard);
           localStorage.setItem('pokemonCards', JSON.stringify(collectedCards));
         }
@@ -125,10 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Handle card flip
     function flipCard() {
       if (gameState.lockBoard || this === gameState.firstCard || this.classList.contains('matched')) return;
+      
       this.classList.add('flipped');
-      if (navigator.vibrate) navigator.vibrate(50); // flip buzz
+      if (navigator.vibrate) navigator.vibrate(50);
       if (!gameState.timerStarted) startTimer();
   
       if (!gameState.hasFlippedCard) {
@@ -149,28 +164,37 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
   
+    // Check if the flipped cards match
     function checkForMatch() {
       const firstType = gameState.firstCard.dataset.sprite.split('-')[0];
       const secondType = gameState.secondCard.dataset.sprite.split('-')[0];
       const isMatch = firstType === secondType;
+      
       isMatch ? disableCards() : unflipCards();
+      
       if (isMatch) {
         gameState.matchedPairs++;
         checkForWin();
       }
     }
   
+    // Handle matched cards
     function disableCards() {
-      if (navigator.vibrate) navigator.vibrate([100, 50, 100]); // match buzz
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      
       gameState.firstCard.classList.add('matched');
       gameState.secondCard.classList.add('matched');
+      
       gameState.firstCard.removeEventListener('click', flipCard);
       gameState.secondCard.removeEventListener('click', flipCard);
+      
       resetBoard();
     }
   
+    // Flip cards back if they don't match
     function unflipCards() {
       gameState.lockBoard = true;
+      
       setTimeout(() => {
         gameState.firstCard.classList.remove('flipped');
         gameState.secondCard.classList.remove('flipped');
@@ -178,11 +202,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1000);
     }
   
+    // Reset the board after a turn
     function resetBoard() {
       [gameState.hasFlippedCard, gameState.lockBoard] = [false, false];
       [gameState.firstCard, gameState.secondCard] = [null, null];
     }
   
+    // Randomize card positions
     function shuffle() {
       cards.forEach(card => {
         const rand = Math.floor(Math.random() * cards.length);
@@ -190,9 +216,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
   
+    // Initialize game
     cards.forEach(card => card.addEventListener('click', flipCard));
     movesLeftEl.textContent = GAME_CONFIG.MAX_MOVES;
     timer.textContent = formatTime(GAME_CONFIG.TIME_LIMIT);
     shuffle();
   }
-  

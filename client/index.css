@@ -6,7 +6,6 @@
 /*.layout and view styling */
 @import '../server/layouts/base.css';
 @import '../server/views/index.css';
-@import '../server/views/detail.css';
 @import '../server/views/memory-game.css';
 @import '../server/views/binder.css';
 
@@ -54,4 +53,16 @@ main {
   padding: 1rem;
   margin-bottom: 1rem;
   overflow: auto;
+}
+
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+img {
+  pointer-events: none;
+  -webkit-user-drag: none;
 }

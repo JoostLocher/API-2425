@@ -166,26 +166,30 @@ Voor het opslaan van de cards in de binder heb ik localstorage gebruikt in de cl
 <details>
 <summary><h2>Week 4</h2></summary>
 
-### Onderzoek
+### Voortgang
 
 **Afronding**
 
-Dit is de laatste week van het project. Aangezien het paasweekend was, en het eindgesprek donderdag is, heb ik een dag de tijd om aan het project te werken. Om deze reden had ik vorige week alle grote functies afgerond en ga ik deze week werken aan mijn documentatie.
+In de laatste week begon ik met het afmaken van de binderpagina door de kaarten te stijlen en in te laden met JavaScript. Daarnaast heb ik ook de laatste puntjes op de i gezet, zoals het weghalen van de footer en ervoor zorgen dat je de afbeeldingen niet kunt selecteren tijdens het spelen.
 
-### Ontwikkeling
+![Binder pagina met cards](image-1.png)
 
-**Afronding**
+Voor de tweede API kwam ik wat in tijdsnood en heb ik gekozen om de Vibration Web API te gebruiken. Deze is iets simpeler en ik heb hem geïmplementeerd in de memorygame bij bepaalde handelingen, zoals het omdraaien van een kaart of wanneer je game over bent.
 
-Naast paar kleine refactorings, heb ik geen grote aanpassingen kunnen maken aan het project.
-
-### Feedback, Vooruitgang & Volgende Week
-
-**Feedback**
+### Vooruitgang & Als ik meer tijd had dan:
 
 **Vooruitgang**
+- Afronding
+- Opschoning
+- 2 Web API toegevoegd (Vibration API)
 
-**Volgende Week**
+**Als ik meer tijd had dan:**
+- Gyroscoop functie toevoegen
+- Online zetten (kreeg error op render door mijn filter function?!)
+- Zorgen dat de home pagina sneller laad
 
 ### Bronnen & Hulp
+
+- [VibrationAPI](https://developer.mozilla.org/en-US/docs/Web/API/Vibration_API)
 
 </details>
