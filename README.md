@@ -156,6 +156,9 @@ Voor het opslaan van de cards in de binder heb ik localstorage gebruikt in de cl
 
 ### Bronnen & Hulp
 
+- [LocalStorage](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage)
+- [Claude](https://claude.ai)
+
 </details>
 
 ---

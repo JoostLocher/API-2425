@@ -58,17 +58,6 @@ app.get('/', async (req, res) => {
     }
   });
 
-  // Fetch all generations data
-  // const genResponse = await fetch(`${baseURL}generation`);
-  // const genData = await genResponse.json();
-
-
-  // Map the generation data to a more accessible format
-  // const genList = genData.results.map((gen, index) => ({
-  //   id: index + 1,
-  //   name: gen.name
-  // }));
-
   // Fetch sprite details for each filtered Pokémon
   const pokemonSprites = await Promise.all(
     filteredPokemon.map(async (pokemon) => {
@@ -159,7 +148,7 @@ app.get('/pokemon/:name/memory-game', async (req, res) => {
 app.get('/binder', async (req, res) => {
   return res.send(
     await renderTemplate('server/views/binder.liquid', {
-      title: 'Pokémon Card Collection'
+      title: 'Card Collection'
     })
   );
 });

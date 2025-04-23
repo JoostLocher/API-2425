@@ -1,5 +1,3 @@
-// memory-game.js
-
 document.addEventListener('DOMContentLoaded', () => {
     initMemoryGame();
   });
@@ -80,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkForWin() {
       if (gameState.matchedPairs === gameState.totalPairs) {
         clearInterval(gameState.timerInterval);
+        if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); // win buzz
         setTimeout(() => {
           winMessage.classList.add('active');
           createConfetti();
@@ -91,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function gameOver(reason) {
       clearInterval(gameState.timerInterval);
       gameState.lockBoard = true;
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 200]); // game over buzz
       const loseReasonEl = document.getElementById('lose-reason');
       if (loseReasonEl) {
         loseReasonEl.textContent = reason === 'time' ? "Time's up!" : "You ran out of moves!";
@@ -128,6 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function flipCard() {
       if (gameState.lockBoard || this === gameState.firstCard || this.classList.contains('matched')) return;
       this.classList.add('flipped');
+      if (navigator.vibrate) navigator.vibrate(50); // flip buzz
       if (!gameState.timerStarted) startTimer();
   
       if (!gameState.hasFlippedCard) {
@@ -160,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   
     function disableCards() {
+      if (navigator.vibrate) navigator.vibrate([100, 50, 100]); // match buzz
       gameState.firstCard.classList.add('matched');
       gameState.secondCard.classList.add('matched');
       gameState.firstCard.removeEventListener('click', flipCard);
