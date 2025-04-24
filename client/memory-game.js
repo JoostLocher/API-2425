@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `${minutes}:${secs}`;
     }
   
-    // Create confetti animation for win
+    // Create confetti animation for win (made by ai)
     function createConfetti() {
       const colors = ['var(--color-blue)', 'var(--color-gray)', 'var(--color-white)'];
       for (let i = 0; i < GAME_CONFIG.CONFETTI_COUNT; i++) {

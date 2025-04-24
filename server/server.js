@@ -29,100 +29,100 @@ const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
 // Home page route
 app.get('/', async (req, res) => {
-  const searchQuery = (req.query.searchbar || '').toLowerCase();
-  console.log("Search Query:", searchQuery);
+  const searchQuery = req.query.searchbar || '';
+  console.log(searchQuery);
 
-  try {
-    // Get all Pokemon data
-    const pokemonResponse = await fetch(allPokemon);
-    const pokemonData = await pokemonResponse.json();
+  // Get search results
+  const searchResponse = await fetch('https://pokemon-service-ucql.onrender.com/api/v1/pokemon/search?name=' + searchQuery);
+  const searchResults = await searchResponse.json();
+  const filterNames = searchResults.map(result => result.name);
 
-    // Filter locally using search query
-    const filteredPokemon = pokemonData.results.filter(pokemon =>
-      pokemon.name.toLowerCase().includes(searchQuery)
-    );
+  // Get all Pokemon data
+  const pokemonResponse = await fetch(allPokemon);
+  const pokemonData = await pokemonResponse.json();
 
-    // Get sprites for each filtered Pokémon
-    const pokemonSprites = await Promise.all(
-      filteredPokemon.map(async (pokemon) => {
-        const detailResponse = await fetch(pokemon.url);
-        const detailData = await detailResponse.json();
-        return {
-          name: pokemon.name,
-          sprite: detailData.sprites.front_default
-        };
-      })
-    );
+  // Filter Pokemon by search results
+  const filteredPokemon = pokemonData.results.filter(pokemon => 
+    filterNames.includes(pokemon.name)
+  );
 
-    return res.send(
-      await renderTemplate('server/views/index.liquid', {
-        title: 'Home',
-        pokemon: pokemonSprites
-      })
-    );
-  } catch (err) {
-    console.error("Error loading Pokémon data:", err);
-    return res.status(500).send("Failed to load Pokémon.");
-  }
+  // Get sprites for each Pokemon
+  const pokemonSprites = await Promise.all(
+    filteredPokemon.map(async (pokemon) => {
+      const detailResponse = await fetch(pokemon.url);
+      const detailData = await detailResponse.json();
+      return {
+        name: pokemon.name,
+        sprite: detailData.sprites.front_default
+      };
+    })
+  );
+
+  return res.send(
+    await renderTemplate('server/views/index.liquid', {
+      title: 'Home',
+      pokemon: pokemonSprites
+    })
+  );
 });
 
 // Memory Game route
 app.get('/pokemon/:name/memory-game', async (req, res) => {
   const name = req.params.name;
-  try {
-    const response = await fetch(`${baseURL}pokemon/${name}`);
-    const data = await response.json();
+  const response = await fetch(`${baseURL}pokemon/${name}`);
+  const data = await response.json();
 
-    const get = (obj, path) =>
-      path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
+  // Helper function to safely access nested properties
+  const get = (obj, path) =>
+    path.reduce((acc, key) => (acc && acc[key] !== undefined) ? acc[key] : null, obj);
 
-    const spriteSources = [
-      { id: 'front_default', path: ['sprites', 'front_default'] },
-      { id: 'front_shiny', path: ['sprites', 'front_shiny'] },
-      { id: 'back_default', path: ['sprites', 'back_default'] },
-      { id: 'back_shiny', path: ['sprites', 'back_shiny'] },
-      { id: 'official_artwork', path: ['sprites', 'other', 'official-artwork', 'front_default'] },
-      { id: 'home_default', path: ['sprites', 'other', 'home', 'front_default'] },
-      { id: 'home_shiny', path: ['sprites', 'other', 'home', 'front_shiny'] },
-      { id: 'dream_world', path: ['sprites', 'other', 'dream_world', 'front_default'] }
-    ];
+  // Define sprite sources to check
+  const spriteSources = [
+    { id: 'front_default', path: ['sprites', 'front_default'] },
+    { id: 'front_shiny', path: ['sprites', 'front_shiny'] },
+    { id: 'back_default', path: ['sprites', 'back_default'] },
+    { id: 'back_shiny', path: ['sprites', 'back_shiny'] },
+    { id: 'official_artwork', path: ['sprites', 'other', 'official-artwork', 'front_default'] },
+    { id: 'home_default', path: ['sprites', 'other', 'home', 'front_default'] },
+    { id: 'home_shiny', path: ['sprites', 'other', 'home', 'front_shiny'] },
+    { id: 'dream_world', path: ['sprites', 'other', 'dream_world', 'front_default'] }
+  ];
 
-    let availableSprites = spriteSources
-      .map(source => ({ id: source.id, sprite: get(data, source.path) }))
-      .filter(entry => !!entry.sprite);
+  // Get available sprites
+  const availableSprites = spriteSources
+    .map(source => ({ id: source.id, sprite: get(data, source.path) }))
+    .filter(entry => !!entry.sprite);
 
-    if (availableSprites.length < 3) {
-      const versions = data.sprites.versions;
-      for (const group in versions) {
-        for (const version in versions[group]) {
-          const spriteUrl = versions[group][version]?.front_default;
-          if (spriteUrl && !availableSprites.find(e => e.sprite === spriteUrl)) {
-            availableSprites.push({
-              id: `${group}_${version}`,
-              sprite: spriteUrl
-            });
-          }
-          if (availableSprites.length >= 6) break;
+  // Find more sprites if needed
+  if (availableSprites.length < 3) {
+    const versions = data.sprites.versions;
+    for (const group in versions) {
+      for (const version in versions[group]) {
+        const spriteUrl = versions[group][version]?.front_default;
+        if (spriteUrl && !availableSprites.find(e => e.sprite === spriteUrl)) {
+          availableSprites.push({
+            id: `${group}_${version}`,
+            sprite: spriteUrl
+          });
         }
         if (availableSprites.length >= 6) break;
       }
+      if (availableSprites.length >= 6) break;
     }
-
-    const selected = availableSprites.slice(0, 6);
-    const cardPairs = selected.flatMap(sprite => ([
-      { id: `${sprite.id}-1`, sprite: sprite.sprite },
-      { id: `${sprite.id}-2`, sprite: sprite.sprite }
-    ]));
-
-    return res.send(await renderTemplate('server/views/memory-game.liquid', {
-      title: `${name} Memory Game`,
-      pokemon: data,
-      cards: cardPairs
-    }));
-  } catch (err) {
-    console.error("Error loading memory game data:", err);
-    return res.status(500).send("Failed to load memory game.");
   }
+
+  // Select sprites and create card pairs
+  const selected = availableSprites.slice(0, 6);
+  const cardPairs = selected.flatMap(sprite => ([
+    { id: `${sprite.id}-1`, sprite: sprite.sprite },
+    { id: `${sprite.id}-2`, sprite: sprite.sprite }
+  ]));
+
+  return res.send(await renderTemplate('server/views/memory-game.liquid', {
+    title: `${name} Memory Game`,
+    pokemon: data,
+    cards: cardPairs
+  }));
 });
 
 // Binder route
