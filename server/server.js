@@ -24,7 +24,7 @@ app
 
 // API constants
 const baseURL = "https://pokeapi.co/api/v2/";
-const limit = 151; // Gen 1 Pokemon
+const limit = 10; // Gen 1 Pokemon
 const allPokemon = `${baseURL}pokemon?offset=0&limit=${limit}`;
 
 // Home page route
